@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>🌱 Home Harvest Market - Local Produce Marketplace</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="Your Local Marketplace for Fresh Homegrown Products">
+  <meta name="theme-color" content="#2E8B57">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Home Harvest">
+  <meta name="msapplication-TileColor" content="#2E8B57">
+  
+  <!-- Icons -->
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <h1>🌱 Home Harvest Market</h1>
+      <p>Your Local Marketplace for Fresh Homegrown Products</p>
+      <div class="auth-section" id="auth-section">
+        <button class="btn-primary" onclick="showLogin()">Login</button>
+        <button class="btn-secondary" onclick="showSignup()">Sign Up</button>
+      </div>
+      <div class="user-section hidden" id="user-section">
+        <span>Welcome, <span id="username"></span>!</span>
+        <button onclick="logout()">Logout</button>
+        <div class="cart-icon" onclick="toggleCart()">
+          🛒 <span id="cart-count">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('login-modal')">&times;</span>
+      <h2>Login</h2>
+      <form id="login-form">
+        <input type="text" id="login-phone" placeholder="Phone Number" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit" class="btn-primary">Login</button>
+      </form>
+      <div class="social-login">
+        <button class="btn-google" onclick="loginWithGoogle()">Login with Google</button>
+        <button class="btn-yahoo" onclick="loginWithYahoo()">Login with Yahoo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div id="signup-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('signup-modal')">&times;</span>
+      <h2>Sign Up</h2>
+      <form id="signup-form">
+        <input type="text" id="signup-name" placeholder="Full Name" required>
+        <input type="text" id="signup-phone" placeholder="Phone Number" required>
+        <input type="email" id="signup-email" placeholder="Email" required>
+        <input type="text" id="signup-pincode" placeholder="Pincode" required>
+        <input type="password" id="signup-password" placeholder="Password" required>
+        <button type="submit" class="btn-primary">Sign Up</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- User Role Selection -->
+  <div id="role-selection" class="section hidden">
+    <h2>What would you like to do today?</h2>
+    <div class="role-buttons">
+      <button class="role-btn" onclick="setUserRole('buyer')">
+        🛒 I want to Buy Products
+      </button>
+      <button class="role-btn" onclick="setUserRole('seller')">
+        🏪 I want to Sell Products
+      </button>
+    </div>
+  </div>
+
+  <!-- Location Filter -->
+  <div id="location-filter" class="section">
+    <div class="filter-row">
+      <input type="text" id="pincode-filter" placeholder="Enter your pincode">
+      <button onclick="filterByLocation()">🔍 Search Nearby</button>
+      <button onclick="getGPSLocation()">📍 Use GPS</button>
+    </div>
+  </div>
+
+  <!-- Categories Section -->
+  <div id="categories" class="section">
+    <h2>Browse Categories</h2>
+    <div class="category-grid">
+      <div class="category-card interactive-element" onclick="showCategory('fruits')">
+        <div class="category-icon">🍎🍌🍊</div>
+        <h3>Fruits</h3>
+        <p class="category-desc">Fresh seasonal fruits</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('vegetables')">
+        <div class="category-icon">🥕🥬🍅</div>
+        <h3>Vegetables</h3>
+        <p class="category-desc">Garden fresh vegetables</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('homemade-food')">
+        <div class="category-icon">🍯🥧🍪</div>
+        <h3>Homemade Food</h3>
+        <p class="category-desc">Traditional recipes</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('organic-oils')">
+        <div class="category-icon">🫒🌶️🧄</div>
+        <h3>Organic Oils & Spices</h3>
+        <p class="category-desc">Pure and natural</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('pickles')">
+        <div class="category-icon">🥒🌶️🥭</div>
+        <h3>Pickles & Preserves</h3>
+        <p class="category-desc">Homemade preserves</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('plants')">
+        <div class="category-icon">🌱🌿🌺</div>
+        <h3>Plants & Saplings</h3>
+        <p class="category-desc">Grow your garden</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('grains')">
+        <div class="category-icon">🌾🌽🍚</div>
+        <h3>Grains & Pulses</h3>
+        <p class="category-desc">Organic staples</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('dairy')">
+        <div class="category-icon">🥛🧈🧀</div>
+        <h3>Fresh Dairy & Products</h3>
+        <p class="category-desc">Farm fresh dairy</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('livestock')">
+        <div class="category-icon">🐄🐐🐑</div>
+        <h3>Livestock</h3>
+        <p class="category-desc">Healthy farm animals</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('poultry')">
+        <div class="category-icon">🐓🐣🥚</div>
+        <h3>Poultry</h3>
+        <p class="category-desc">Fresh eggs & birds</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('crafts')">
+        <div class="category-icon">🔨🧺🎨</div>
+        <h3>Handmade Crafts</h3>
+        <p class="category-desc">Artisan creations</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('farming-supplies')">
+        <div class="category-icon">🪴🛠️⚒️</div>
+        <h3>Farming Supplies</h3>
+        <p class="category-desc">Tools & equipment</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('manure')">
+        <div class="category-icon">🌱💩🪴</div>
+        <h3>Manure for Home Garden</h3>
+        <p class="category-desc">Organic fertilizers</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('donate')">
+        <div class="category-icon">❤️🤝🎁</div>
+        <h3>Donate</h3>
+        <p class="category-desc">Help your community</p>
+      </div>
+      <div class="category-card interactive-element" onclick="showCategory('products-for-free')">
+        <div class="category-icon">🆓🎁💝</div>
+        <h3>Products & Produce for Free</h3>
+        <p class="category-desc">Community sharing</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Product Section (For Sellers) -->
+  <div id="add-product" class="section hidden">
+    <h2>Add Your Product for Sale</h2>
+    <form id="product-form">
+      <select id="product-category" required>
+        <option value="">Select Category</option>
+        <option value="fruits">Fruits</option>
+        <option value="vegetables">Vegetables</option>
+        <option value="homemade-food">Homemade Food/Snacks</option>
+        <option value="organic-oils">Organic Oils & Spices</option>
+        <option value="pickles">Pickles & Preserves</option>
+        <option value="plants">Plants & Saplings</option>
+        <option value="grains">Grains & Pulses</option>
+        <option value="dairy">Fresh Dairy & Products</option>
+        <option value="livestock">Livestock</option>
+        <option value="poultry">Poultry</option>
+        <option value="crafts">Handmade Crafts</option>
+        <option value="farming-supplies">Farming Supplies</option>
+        <option value="manure">Manure for Home Garden</option>
+        <option value="donate">Donate</option>
+        <option value="products-for-free">Products & Produce for Free</option>
+      </select>
+      
+      <select id="product-subcategory" required>
+        <option value="">Select Subcategory</option>
+      </select>
+      
+      <input type="text" id="product-name" placeholder="Product Name" required>
+      <textarea id="product-description" placeholder="Product Description" required></textarea>
+      <input type="number" id="product-price" placeholder="Price per unit (₹)" required>
+      <input type="text" id="product-unit" placeholder="Unit (kg, piece, liter)" required>
+      <input type="number" id="product-quantity" placeholder="Available Quantity" required>
+      
+      <!-- Special fields for livestock -->
+      <div id="livestock-fields" class="special-fields hidden">
+        <h4>Livestock Details:</h4>
+        <input type="number" id="animal-age" placeholder="Age (in years)" min="0" step="0.5">
+        <select id="animal-gender">
+          <option value="">Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+        <select id="pregnancy-status">
+          <option value="">Pregnancy Status</option>
+          <option value="not-applicable">Not Applicable</option>
+          <option value="pregnant">Pregnant</option>
+          <option value="with-calf">With Calf</option>
+          <option value="not-pregnant">Not Pregnant</option>
+        </select>
+        <input type="number" id="milk-yield" placeholder="Milk yield (liters/day)" min="0" step="0.5">
+        <textarea id="animal-health" placeholder="Health status and vaccination details"></textarea>
+      </div>
+      
+      <!-- Special fields for poultry -->
+      <div id="poultry-fields" class="special-fields hidden">
+        <h4>Poultry Details:</h4>
+        <input type="number" id="bird-age-months" placeholder="Age (in months)" min="0" step="0.5">
+        <select id="bird-type">
+          <option value="">Select Type</option>
+          <option value="desi">Desi/Country Chicken</option>
+          <option value="broiler">Broiler</option>
+          <option value="layer">Layer</option>
+          <option value="fancy">Fancy/Ornamental</option>
+          <option value="duck">Duck</option>
+        </select>
+        <select id="bird-purpose">
+          <option value="">Select Purpose</option>
+          <option value="meat">For Meat</option>
+          <option value="eggs">For Eggs</option>
+          <option value="breeding">For Breeding</option>
+          <option value="ornamental">Ornamental</option>
+        </select>
+        <input type="number" id="egg-production" placeholder="Eggs per week (if applicable)" min="0">
+      </div>
+      
+      <div class="delivery-options">
+        <h4>Delivery Options:</h4>
+        <label><input type="checkbox" id="self-pickup" checked> Self Pickup</label>
+        <label><input type="checkbox" id="home-delivery"> Home Delivery (By Seller)</label>
+        <label><input type="checkbox" id="delivery-partner"> Delivery Partner Service</label>
+      </div>
+      
+      <div id="delivery-charges" class="delivery-charges hidden">
+        <h4>Delivery Charges:</h4>
+        <input type="number" id="delivery-charge" placeholder="Delivery charge (₹)" min="0">
+      </div>
+      
+      <div class="image-upload-section">
+        <input type="file" id="product-image" accept="image/*" multiple>
+        <button type="button" class="camera-btn" onclick="captureProductImage()">
+          📷 Take Photo
+        </button>
+      </div>
+      <button type="submit" class="btn-primary">Add Product</button>
+    </form>
+  </div>
+
+  <!-- Products Display -->
+  <div id="products-section" class="section">
+    <div class="section-header">
+      <h2>Available Products</h2>
+      <div class="sort-filter">
+        <select id="sort-by" onchange="sortProducts()">
+          <option value="newest">Newest First</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Highest Rated</option>
+        </select>
+      </div>
+    </div>
+    <div id="products" class="products-grid"></div>
+  </div>
+
+  <!-- Shopping Cart -->
+  <div id="cart" class="cart-sidebar hidden">
+    <div class="cart-header">
+      <h3>Shopping Cart</h3>
+      <button onclick="toggleCart()" class="close-cart">&times;</button>
+    </div>
+    <div id="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        Total: ₹<span id="cart-total">0</span>
+      </div>
+      <button class="btn-primary" onclick="proceedToCheckout()">Checkout</button>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('checkout-modal')">&times;</span>
+      <h2>Checkout</h2>
+      <div id="checkout-items"></div>
+      <div class="delivery-address">
+        <h4>Delivery Address</h4>
+        <textarea id="delivery-address" placeholder="Enter your full address" required></textarea>
+      </div>
+      <div class="payment-options">
+        <h4>Payment Method</h4>
+        <label><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label>
+        <label><input type="radio" name="payment" value="upi"> UPI Payment</label>
+        <label><input type="radio" name="payment" value="card"> Credit/Debit Card</label>
+        <label><input type="radio" name="payment" value="netbanking"> Net Banking</label>
+        <label><input type="radio" name="payment" value="wallet"> Digital Wallet</label>
+      </div>
+      
+      <div id="payment-details" class="payment-details hidden">
+        <div id="upi-details" class="payment-method-details hidden">
+          <input type="text" id="upi-id" placeholder="Enter UPI ID">
+        </div>
+        
+        <div id="card-details" class="payment-method-details hidden">
+          <input type="text" id="card-number" placeholder="Card Number" maxlength="19">
+          <div style="display: flex; gap: 1rem;">
+            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+            <input type="text" id="cvv" placeholder="CVV" maxlength="3">
+          </div>
+          <input type="text" id="cardholder-name" placeholder="Cardholder Name">
+        </div>
+        
+        <div id="netbanking-details" class="payment-method-details hidden">
+          <select id="bank-select">
+            <option value="">Select Bank</option>
+            <option value="sbi">State Bank of India</option>
+            <option value="hdfc">HDFC Bank</option>
+            <option value="icici">ICICI Bank</option>
+            <option value="axis">Axis Bank</option>
+            <option value="pnb">Punjab National Bank</option>
+          </select>
+        </div>
+        
+        <div id="wallet-details" class="payment-method-details hidden">
+          <select id="wallet-select">
+            <option value="">Select Wallet</option>
+            <option value="paytm">Paytm</option>
+            <option value="phonepe">PhonePe</option>
+            <option value="gpay">Google Pay</option>
+            <option value="amazonpay">Amazon Pay</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="placeOrder()">Place Order</button>
+    </div>
+  </div>
+
+  <!-- Chat Modal -->
+  <div id="chat-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('chat-modal')">&times;</span>
+      <h2>Chat with Seller</h2>
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-input">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Dashboard -->
+  <div id="dashboard" class="section hidden">
+    <div class="dashboard-tabs">
+      <button class="tab-btn active" onclick="showTab('my-orders')">My Orders</button>
+      <button class="tab-btn" onclick="showTab('my-products')">My Products</button>
+    </div>
+    
+    <div id="my-orders" class="tab-content">
+      <h3>My Orders</h3>
+      <div id="orders-list"></div>
+    </div>
+    
+    <div id="my-products" class="tab-content hidden">
+      <h3>My Products</h3>
+      <div id="seller-products-list"></div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="bottom-nav">
+    <button onclick="showHome()" class="nav-btn">🏠 Home</button>
+    <button onclick="showCategories()" class="nav-btn">📂 Categories</button>
+    <button onclick="showAddProduct()" class="nav-btn">➕ Sell</button>
+    <button onclick="showDashboard()" class="nav-btn">👤 Profile</button>
+  </nav>
+
+  <footer>
+    <p>© 2025 Home Harvest Market - Connecting Local Producers & Communities</p>
+  </footer>
+
+  <!-- Install App Prompt -->
+  <div id="install-prompt" class="install-prompt hidden">
+    <div class="install-content">
+      <h3>📱 Install Home Harvest Market</h3>
+      <p>Add our app to your home screen for quick access!</p>
+      <div class="install-buttons">
+        <button class="btn-primary" onclick="installApp()">Install App</button>
+        <button class="btn-secondary" onclick="dismissInstall()">Maybe Later</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  
+  <script>
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered: ', registration);
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+
+    // PWA install prompt
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstallPrompt();
+    });
+
+    function showInstallPrompt() {
+      document.getElementById('install-prompt').classList.remove('hidden');
+    }
+
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          }
+          deferredPrompt = null;
+          document.getElementById('install-prompt').classList.add('hidden');
+        });
+      }
+    }
+
+    function dismissInstall() {
+      document.getElementById('install-prompt').classList.add('hidden');
+    }
+
+    // Request notification permission
+    if ('Notification' in window && navigator.serviceWorker) {
+      if (Notification.permission === 'default') {
+        setTimeout(() => {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              console.log('Notification permission granted');
+            }
+          });
+        }, 5000);
+      }
+    }
+
+    // Handle app install
+    window.addEventListener('appinstalled', (evt) => {
+      console.log('App was installed');
+      showNotification('🎉 Home Harvest Market installed successfully!');
+    });
+
+    // Detect if running as PWA
+    function isPWA() {
+      return window.matchMedia('(display-mode: standalone)').matches || 
+             window.navigator.standalone === true;
+    }
+
+    // Hide install prompt if already installed
+    if (isPWA()) {
+      document.getElementById('install-prompt').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate App Icons</title>
+</head>
+<body>
+    <canvas id="icon-canvas" width="512" height="512" style="border: 1px solid #ccc;"></canvas>
+    <br><br>
+    <button onclick="downloadIcon(192)">Download 192x192 Icon</button>
+    <button onclick="downloadIcon(512)">Download 512x512 Icon</button>
+    
+    <script>
+        const canvas = document.getElementById('icon-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Create app icon
+        function createIcon() {
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+            gradient.addColorStop(0, '#2E8B57');
+            gradient.addColorStop(1, '#228B22');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 512, 512);
+            
+            // Add rounded corners
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, 512, 512, 80);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Add plant emoji/symbol
+            ctx.font = 'bold 280px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'white';
+            ctx.fillText('🌱', 256, 256);
+            
+            // Add text
+            ctx.font = 'bold 48px Arial';
+            ctx.fillStyle = 'white';
+            ctx.fillText('Home', 256, 380);
+            ctx.fillText('Harvest', 256, 430);
+        }
+        
+        function downloadIcon(size) {
+            createIcon();
+            
+            // Create new canvas with desired size
+            const newCanvas = document.createElement('canvas');
+            newCanvas.width = size;
+            newCanvas.height = size;
+            const newCtx = newCanvas.getContext('2d');
+            
+            // Draw scaled version
+            newCtx.drawImage(canvas, 0, 0, size, size);
+            
+            // Download
+            const link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = newCanvas.toDataURL();
+            link.click();
+        }
+        
+        // Create initial icon
+        createIcon();
+    </script>
+</body>
+</html>
